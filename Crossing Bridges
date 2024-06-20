@@ -1,0 +1,67 @@
+LEVEL:-MEDIUM
+COMPANY:-Amazon
+URL:-https://www.interviewquery.com/questions/crossing-bridges#comments
+
+Question:-
+Let’s say we want to run some data collection on the Golden Gate bridge.
+
+    What would the table schema look like if we wanted to track how long each car took coming into San Francisco to enter and 
+	exit the bridge? Let’s say we want to track additional descriptives like the car model and license plate.
+
+    Write a query on the given tables to get the time of the fastest car on the current day.
+
+    Write a query on the given tables to get the car model with the average fastest times for the current day.
+
+Example: Let’s say three Ferraris crossed the bridge in an average of one minute.
+
+Solution:-
+1. This question functions slightly more like data engineering or architecture program. Given a certain use case or application, we have to model how we want to store the information.
+
+In this case we’re given that we have to track time entered and exited leaving the bridge, but also the car make and model along with license plate information. We know that the car model to license plate information will be one-to-many, given that each license plate represents a single car, and a car model can be replicated many times.
+
+Let’s model the schema in this format then of each drive across the bridge as a distinct event. We can set an enter_time and exit_time for each car as they go through the bridge.
+
+crossings table
+Column 	Type
+id 	INTEGER
+license_plate 	VARCHAR
+enter_time 	DATETIME
+exit_time 	DATETIME
+car_model_id 	INTEGER
+
+car_models table
+Column 	Type
+id 	INTEGER
+model_name 	VARCHAR
+
+Notice how we set a foreign key to represent each car model. Given there can be many duplicate car models in the crossings table, setting the value to an integer foreign key allows us to save space in our schema when representing the model name of the car multiple times. 
+
+2. Since we only need the crossing time and the license plate number, we can write a query that only uses the crossings table.
+
+Let’s set conditions where the enter_time and exit_time are both set to the current date. Let’s compute the fastest time as being the minimum difference between the exit_time and the enter_time.
+
+SELECT 
+    license_plate
+    , MIN(DATEDIFF(exit_time, enter_time)) AS crossing_time
+FROM crossings
+WHERE DATE(enter_time) = DATE(NOW())
+    AND DATE(exit_time) = DATE(NOW())
+GROUP BY 1
+ORDER BY 2 
+LIMIT 1  
+
+3.
+
+Let’s compute the average fastest car model as the sum of all of the crossings by the specific car models divided by all of the crossings. We don’t care about duplicates in this scenario given that total crossings should be the denominator and total crossing time as the numerator.
+
+We can join the two tables together on the car_model_id field and then group by the model name. Since we only need the fastest car model we can order by our computation metric, then limit the table size to one.
+
+SELECT 
+    cm.model_name
+    , SUM(DATEDIFF(exit_time, enter_time))/COUNT(*) AS avg_crossing_time
+FROM crossing AS c
+INNER JOIN car_models AS cm 
+    ON c.car_model_id = cm.id
+GROUP BY 1
+ORDER BY 2 
+LIMIT 1
