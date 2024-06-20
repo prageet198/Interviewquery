@@ -1,0 +1,25 @@
+LEVEL:-EASY
+COMPANY:- Version
+URL:-https://www.interviewquery.com/questions/total-salary
+
+Question:-
+Using the employees table, get the total salary of all employees
+
+Solution:-
+SELECT SUM(salary) AS total_salary FROM employees 
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+TITLE:-Empty Neighborhoods
+LEVEL:-EASY
+COMPANY:-Amazon
+URL:-https://www.interviewquery.com/questions/empty-neighborhoods
+
+Question:-
+We’re given two tables, a users table with demographic information and the neighborhood they live in and a neighborhoods table.
+
+Write a query that returns all neighborhoods that have 0 users. 
+
+Solution:-
+SELECT neighborhoods.name AS name
+FROM neighborhoods LEFT JOIN users 
+ON neighborhoods.id=users.neighborhood_id
+WHERE users.id IS NULL
