@@ -1,0 +1,11 @@
+LEVEL:-EASY
+COMPANY:-Impetus
+URL:-https://www.interviewquery.com/questions/largest-salary-by-department
+
+Question:-
+Given a table called employees, get the largest salary of any employee by department
+
+Solution:-
+SELECT department, MAX(salary) AS largest_salary 
+FROM employees 
+GROUP BY department
