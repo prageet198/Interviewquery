@@ -1,0 +1,15 @@
+LEVEL:-EASY
+COMPANY:-Google
+URL:-https://www.interviewquery.com/questions/lifetime-plays
+
+Question:-
+We have a table called song_plays that tracks each time a user plays a song.
+
+Write a query to return the number of songs played on each date for each user
+
+NOTE: If a user played the same song twice during the day count should be two.
+
+Solution:-
+SELECT user_id, DATE(date_played) AS played_date, COUNT(*) AS number_of_plays
+FROM song_plays
+GROUP BY 1,2
