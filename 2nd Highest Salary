@@ -1,0 +1,18 @@
+LEVEL:-EASY
+COMPANY:-Amazon
+URL:-https://www.interviewquery.com/questions/2nd-highest-salary
+
+Question:-
+Write a SQL query to select the 2nd highest salary in the engineering department.
+
+Note: If more than one person shares the highest salary, the query should select the next highest salary.
+
+Solution:-
+WITH overalldata AS (
+    SELECT salary,
+RANK() OVER(PARTITION BY department_id ORDER BY salary DESC) AS ranked
+FROM employees 
+WHERE department_id='1'
+
+)
+SELECT salary FROM overalldata WHERE ranked='2'
