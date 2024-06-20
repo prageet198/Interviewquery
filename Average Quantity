@@ -1,0 +1,16 @@
+LEVEL:-EASY
+COMPANY:-Amazon
+URL:-https://www.interviewquery.com/questions/average-quantity
+
+Question:-Given a table of transactions, write a query to find the average quantity of each product purchased per transaction each year.
+
+The output should include the year, product_id, and average quantity of the product purchased per transaction that year. 
+The output table should be sorted by year and product_id in ascending order. The value for avg_quantity should be rounded to two decimal places.
+
+Solution:-
+SELECT ROUND(AVG(quantity),2) AS avg_quantity,
+product_id,
+EXTRACT(YEAR FROM created_at) AS year
+FROM transactions
+GROUP BY product_id, EXTRACT(YEAR FROM created_at)
+ORDER BY EXTRACT(YEAR FROM created_at), product_id
