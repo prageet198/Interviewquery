@@ -1,0 +1,13 @@
+LEVEL:-EASY
+COMPANY:-Uber
+URL:-https://www.interviewquery.com/questions/distance-traveled
+
+Question:- 
+Given the tables users and rides, write a query to report the distance traveled by each user in descending order.
+
+Solution:-
+SELECT IFNULL(SUM(rides.distance),0) AS distance_traveled, users.name
+from rides RIGHT JOIN users
+ON rides.passenger_user_id=users.id
+GROUP BY users.name
+ORDER BY distance_traveled DESC
