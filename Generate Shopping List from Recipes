@@ -1,0 +1,21 @@
+LEVEL:-MEDIUM
+COMPANY:-Instacart
+URL:-https://www.interviewquery.com/questions/generate-shopping-list-from-recipes
+
+Question:-
+You are a chef preparing for an important event. You downloaded three recipes to make and imported each as a separate table: recipe1, recipe2, recipe3 
+into your database. Each recipe requires some grocery items in various quantities.
+
+Write a query that sums up the total mass of each grocery item required across all recipes
+
+Solution:-
+WITH combineAll AS(
+    SELECT grocery, mass FROM recipe1
+    UNION ALL
+    SELECT grocery, mass FROM recipe2
+    UNION ALL
+    SELECT grocery, mass FROM recipe3
+)
+SELECT grocery, SUM(mass) AS total_mass
+FROM combineAll
+GROUP BY grocery
