@@ -1,0 +1,15 @@
+LEVEL:-EASY
+COMPANY:-Bayer
+URL:-https://www.interviewquery.com/questions/total-spent-on-products
+
+Question:-
+Let’s say you work at Costco. Costco has a database with two tables. The first is users composed of user information, 
+including their registration date, and the second is purchases that has the entire item purchase history (if any) for those users.
+
+Write a query to get the total amount spent on each item in the ‘purchases’ table by users that registered in 2022.
+
+Solution:-
+SELECT item, SUM(price) AS total_amount_spent
+FROM users INNER JOIN purchases ON users.user_id=CAST(purchases.user_id AS int)
+WHERE EXTRACT(YEAR FROM registration_date)='2022'
+GROUP BY item
