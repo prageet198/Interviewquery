@@ -1,0 +1,16 @@
+LEVEL:-EASY
+COMPANY:-Meta
+URL:-https://www.interviewquery.com/questions/acceptance-rate
+
+Question:-
+We’re given two tables. friend_requests holds all the friend requests made and friend_accepts is all of the acceptances.
+
+Write a query to find the overall acceptance rate of friend requests.
+
+Note: Round results to 4 decimal places.
+
+Solution-1:-
+SELECT  CAST(COUNT(b.acceptor_id)/ COUNT(a.requester_id) AS DECIMAL(5,4)) AS acceptance_rate 
+FROM friend_requests a
+LEFT JOIN friend_accepts b 
+ON a.requester_id = b.requester_id AND a.requested_id = b.acceptor_id;
