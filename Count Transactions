@@ -1,0 +1,26 @@
+LEVEL:-EASY
+COMPANY:-Bayer
+URL:-https://www.interviewquery.com/questions/count-transactions
+
+Question:-
+Let’s say we have an annual_payments table. Answer the following three questions via SQL queries and output them as a table with the answers to each question.
+
+   1.How many total transactions are in this table?
+   2.How many different users made transactions?
+   3.How many transactions listed as "paid" have an amount greater or equal to 100?
+   4.Which product made the highest revenue? (use only transactions with a "paid" status)
+Solution:-
+SELECT 1 AS question_id, COUNT(*) AS answer
+FROM annual_payments 
+UNION ALL
+SELECT 2 AS question_id, COUNT(DISTINCT (user_id)) AS totalTransaction
+FROM annual_payments
+UNION ALL
+SELECT 3 AS question_id, COUNT(*) AS totalTransaction
+FROM annual_payments 
+WHERE status='paid' AND amount>=100
+UNION ALL
+(SELECT 4 AS question_id ,product FROM (SELECT SUM(amount) AS amt, product
+FROM annual_payments 
+WHERE status='paid'
+GROUP BY product) AS A ORDER BY amt DESC LIMIT 1)
