@@ -1,0 +1,20 @@
+LEVEL:-MEDIUM
+COMPANY:-Amazon
+URL:-https://www.interviewquery.com/questions/order-addresses
+
+Question:-
+Given a table of transactions and a table of users, write a query to determine if users tend to order more to their primary address versus other addresses.
+
+Note: Return the percentage of transactions ordered to their home address as home_address_percent.
+
+Solution:-
+WITH calculation AS (
+    SELECT COUNT(transactions.id) AS tid,
+SUM(CASE WHEN transactions.shipping_address=users.address
+THEN 1 END) AS isMAtched
+FROM transactions INNER JOIN users
+ON transactions.user_id=users.id
+)
+
+SELECT (isMAtched/tid) AS home_address_percent
+FROM calculation
