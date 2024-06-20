@@ -1,0 +1,23 @@
+LEVEL:-MEDIUM
+COMPANY:-Amazon
+URL:-https://www.interviewquery.com/questions/completed-shipments
+
+Question:-
+Let’s say that you’re a data scientist working on a distribution team at Amazon.
+
+Create a report displaying which shipments were delivered to customers during their membership period.
+
+If the transaction is shipped during the membership period, column is_member should have the value Y. If not, the column should have the value N.
+
+Hint: You may assume that customer_id is unique and that shipments are made only to registered customers.
+
+Solution:-
+SELECT shipments.shipment_id,
+shipments.ship_date,
+shipments.customer_id AS customer_id,
+CASE WHEN shipments.ship_date BETWEEN customers.membership_start_date
+AND customers.membership_end_date THEN 'Y'
+ELSE 'N' END AS is_memeber,
+shipments.quantity
+FROM customers INNER JOIN shipments 
+ON customers.customer_id=shipments.customer_id
