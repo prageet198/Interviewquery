@@ -1,0 +1,14 @@
+LEVEL:-EASY
+COMPANY:-Yahoo
+URL:-https://www.interviewquery.com/questions/player-analysis
+
+Question:-
+You’ve been asked to analyze the player’s behaviors at a gaming company.
+
+Write a query to get the number of players who played between 5 and 10 games (5 and 10 excluded), and the number of players who played 10 games or more.
+
+Solution:-
+SELECT
+SUM(CASE WHEN games_played BETWEEN 6 AND 9 THEN 1 END) AS players_more_than_5_to_10_games,
+SUM(CASE WHEN games_played>=10 THEN 1 END) AS players_10_plus_games
+FROM players
