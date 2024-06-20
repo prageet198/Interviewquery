@@ -1,0 +1,27 @@
+LEVEL:-EASY
+COMPANY:-Zesty
+URL:-https://www.interviewquery.com/questions/purchased-product
+
+Question:-
+You’re analyzing a user’s purchases for a retail business.
+
+Each product belongs to a category. Your task is to identify which purchases represent the first time the user has bought a product from its own category 
+and which purchases represent repeat purchases within the product category.
+
+The id in the purchases table represents the purchase order (rows with a lower id are earlier purchases).
+
+Your code should output a table that includes every purchase the user has made. Additionally, the table should include a boolean column 
+with a value of 1 if the user has previously purchased a product from its category and 0 if it’s their first time buying a product from that category.
+
+Note: Sort the results by the time purchased, in ascending order.
+
+Solution:-
+WITH allData AS(
+SELECT id, product_name, product_category,
+LAG(product_category,1,0) OVER (PARTITION BY product_category ORDER BY id) AS prevCat
+FROM purchases 
+)
+SELECT product_name,
+CASE WHEN product_category=prevCat THEN 1 ELSE 0 END AS category_previously_purchased
+FROM allData
+ORDER BY id
