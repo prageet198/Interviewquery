@@ -1,0 +1,17 @@
+LEVEL:-MEDIUM
+COMPANY:-Amazon
+URL:-https://www.interviewquery.com/questions/monthly-customer-report
+
+Question:-
+Write a query to show the number of users, number of transactions placed, and total order amount per month in the year 2020. 
+Assume that we are only interested in the monthly reports for a single year (January-December).
+
+Solution:-
+SELECT EXTRACT (MONTH FROM created_at) AS month,
+COUNT(DISTINCT user_id) AS num_customers,
+COUNT(transactions.id) AS num_orders,
+SUM(quantity*price) AS order_amt
+FROM transactions INNER JOIN products  
+ON transactions.product_id=products.id
+WHERE EXTRACT (YEAR FROM created_at)='2020'
+GROUP BY 1
