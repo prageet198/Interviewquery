@@ -1,0 +1,23 @@
+LEVEL:-MEDIUM
+COMPANY:-Meta
+URL:-https://www.interviewquery.com/questions/comments-histogram
+
+Question:-
+Write a SQL query to create a histogram of the number of comments per user in the month of January 2020.
+
+Note: Assume bin buckets class intervals of one.
+
+Note: Comments that were created outside of January 2020 should be counted in a “0” bucket
+
+Solution:-
+SELECT comment_count, COUNT(*) AS frequency
+FROM (
+	SELECT users.id, COUNT(comments.user_id) AS comment_count
+	FROM users
+	LEFT JOIN comments
+	    ON users.id = comments.user_id
+	        AND comments.created_at 
+	        BETWEEN '2020-01-01' AND '2020-01-31'
+	GROUP BY 1
+) AS t
+GROUP BY 1
