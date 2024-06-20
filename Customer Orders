@@ -1,0 +1,38 @@
+LEVEL:-MEDIUM
+COMPANY:-Amazon
+URL:-https://www.interviewquery.com/questions/customer-orders
+
+Question:-
+Write a query to identify customers who placed more than three transactions each in both 2019 and 2020.
+
+Solution-1:-
+WITH yearlyTransaction AS (
+    SELECT user_id, 
+EXTRACT(YEAR FROM created_at) AS transactionYear,
+COUNT(*) AS totalYearTransaction
+from transactions
+GROUP BY 1,2
+HAVING COUNT(*)>3
+ORDER BY 2
+)
+
+SELECT users.name AS customer_name
+FROM yearlyTransaction INNER JOIN users
+ON yearlyTransaction.user_id=users.id
+GROUP BY user_id, users.name
+HAVING COUNT(*)>1
+
+Solution-2:-
+WITH transaction_counts AS (
+SELECT u.id, 
+name,
+SUM(CASE WHEN YEAR(t.created_at)= '2019' THEN 1 ELSE 0 END) AS t_2019,
+SUM(CASE WHEN YEAR(t.created_at)= '2020' THEN 1 ELSE 0 END) AS t_2020
+FROM transactions t
+JOIN users u
+ON u.id = user_id
+GROUP BY 1
+HAVING t_2019 > 3 AND t_2020 > 3)
+
+SELECT tc.name AS customer_name
+FROM transaction_counts tc
