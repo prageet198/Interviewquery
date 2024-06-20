@@ -1,0 +1,32 @@
+LEVEL:-MEDIUM
+COMPANY:-JP Morgan
+URL:-https://www.interviewquery.com/questions/slacking-employees-salaries
+
+Question:-
+Suppose your company needs to cut costs due to an economic downturn. During a coffee break, you hear a rumor that a lot of money goes to 
+employees who don’t do their work, and you decide to find out if the rumor is true.
+
+Given two tables: employees and projects, find the sum of the salaries of all the employees who didn’t complete any of their projects.
+
+Clarification:
+
+We will consider a project unfinished if it has no end date (its End_dt is NULL).
+
+Given this, we’ll say an employee didn’t finish any of their projects when:
+
+    They were assigned at least one project.
+    None of their projects have an End_dt.
+
+Solution:-
+WITH combineData AS(
+SELECT employees.id AS empId,
+salary,
+COUNT(*) AS totalProjects,
+SUM(CASE WHEN End_dt IS NULL THEN 1 END) AS totalNoProject
+FROM employees INNER JOIN projects
+ON employees.id=projects.employee_id
+GROUP BY 1,2
+)
+SELECT SUM(salary) AS total_slack_salary
+FROM combineData
+WHERE totalNoProject=totalProjects
