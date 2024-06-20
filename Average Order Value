@@ -1,0 +1,18 @@
+LEVEL:-EASY
+COMPANY:-Klaviyo
+URL:-https://www.interviewquery.com/questions/average-order-value
+
+Question:-
+Given three tables, representing customer transactions and customer attributes:
+
+Write a query to get the average order value by gender.
+
+Note: We’re looking at the average order value by users that have ever placed an order. Additionally, please round your answer to two decimal places.
+
+Solution:-
+SELECT users.sex, ROUND(AVG((products.price * transactions.quantity)),2) AS aov
+FROM transactions INNER JOIN users 
+ON transactions.user_id=users.id
+INNER JOIN products 
+ON products.id=transactions.product_id
+GROUP BY users.sex
