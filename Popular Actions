@@ -1,0 +1,23 @@
+LEVEL:-EASY
+COMPANY:-Twitter
+URL:-https://www.interviewquery.com/questions/popular-actions
+
+Question:-
+The events table tracks every time a user performs a certain action (like, post_enter, etc.) on a platform.
+
+Write a query to determine the top 5 actions performed during the week of Thanksgiving (11/22/2020 - 11/28/2020), and rank them based on number of times performed.
+
+The output should include the action performed and their rank in ascending order. If two actions were performed equally, they should have the same rank. 
+
+Solution:-
+SELECT
+	action,
+	dense_rank() OVER (ORDER BY count(action)
+		DESC) AS ranks
+FROM
+	events
+WHERE
+	date(created_at) BETWEEN '2020-11-22'
+	AND '2020-11-28'
+GROUP BY 1
+LIMIT 5
