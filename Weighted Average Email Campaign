@@ -1,0 +1,15 @@
+LEVEL:-EASY
+COMPANY:-Meta
+URL:-https://www.interviewquery.com/questions/weighted-average-email-campaign
+
+Question:-A marketing team is reviewing their past email campaigns to measure the effectiveness of each campaign. 
+They’ve collected data on the number of users who opened each email and clicked on a link.
+
+Write a SQL query to calculate the weighted average score for each campaign, where the weight of the open rate is 0.3 and the weight of the click rate is 0.7.
+
+Note: The weighted average should be rounded to two decimal places.
+
+Solution:-
+SELECT campaign_name,
+ROUND(((num_opens/num_users)*0.3) + ((num_clicks/num_users)*0.7),2) AS weighted_avg
+FROM email_campaigns;
