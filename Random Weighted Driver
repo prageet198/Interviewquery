@@ -1,0 +1,22 @@
+LEVEL:-MEDIUM
+COMPANY:-Uber
+URL:-https://www.interviewquery.com/questions/random-weighted-driver
+
+Question:-
+Let’s say we want to improve the matching algorithm for drivers and riders for Uber. The engineering team has added a new column 
+to the drivers table called weighting. It contains a weighted value, which they hope will lead to better matching.
+
+Given this table of drivers, write a query to perform a weighted random selection of a driver based on the driver weight.
+
+Solution:-
+select q2.id from
+(
+  select q1.id, q1.scaled_weights, sum(q1.scaled_weights) over (order by q1.id ) cumulative_th
+  from
+     (
+      select id ,  weighting/sum(weighting) over() as scaled_weights from drivers
+     ) q1
+) q2
+where cumulative_th > rand()
+order by id
+limit 1;
