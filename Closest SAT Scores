@@ -1,0 +1,38 @@
+TITLE:-Closest SAT Scores
+LEVEL:-MEDIUM
+COMPANY:-Amazon
+URL:-https://www.interviewquery.com/questions/closest-sat-scores
+
+Question:-
+Given a table of students and their SAT test scores, write a query to return the two students with the closest test scores with the score difference.
+
+If there are multiple students with the same minimum score difference, select the student name combination that is higher in the alphabet. 
+
+Solution-1:-
+WITH initialTable AS (
+    SELECT s1.id AS firstId, s1.student AS firstStudent,
+s1.score AS firstScore, s2.id AS secondId,
+s2.student AS secondStudent, s2.score AS secondScore 
+FROM scores AS s1 INNER JOIN scores AS s2
+ON s1.id!=s2.id AND s1.id < s2.id
+)
+
+SELECT firstStudent AS one_student,
+secondStudent AS other_student,
+CASE WHEN firstScore<secondScore THEN secondScore-firstScore
+ELSE firstScore-secondScore END AS score_diff
+FROM initialTable
+ORDER BY score_diff, one_student
+LIMIT 1
+
+Solution-2:-
+SELECT 
+    s1.student AS one_student
+    , s2.student AS other_student
+    , ABS(s1.score - s2.score) AS score_diff
+FROM scores AS s1
+INNER JOIN scores AS s2
+    ON s1.id != s2.id
+        AND s1.id < s2.id
+ORDER BY 3 ASC, 1 ASC
+LIMIT 1
