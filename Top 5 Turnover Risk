@@ -1,0 +1,21 @@
+LEVEL:-MEDIUM
+COMPANY:-IBM
+URL:-https://www.interviewquery.com/questions/top-5-turnover-risk
+
+Question:-
+Let’s say you’re working in HR at a major tech company, and they ask you to find employees with a high probability of leaving the company. 
+They tell you these employees perform well but have the lowest pay.
+
+Given two tables, employees and projects, find the five lowest-paid employees who have completed at least three projects.
+
+Note: We consider projects to be completed when they have an end date, which is the same as saying their End_dt is not NULL.
+
+Solution:-
+SELECT projects.employee_id
+FROM projects INNER JOIN employees 
+ON projects.employee_id=employees.id
+WHERE Start_dt IS NOT NULL AND End_dt IS NOT NULL
+GROUP BY 1
+HAVING COUNT(project_id)>=3
+ORDER BY salary
+LIMIT 5
