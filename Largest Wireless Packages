@@ -1,0 +1,20 @@
+LEVEL:-EASY
+COMPANY:-Amazon
+URL:-https://www.interviewquery.com/questions/largest-wireless-packages
+
+Question:-
+The table packet_rates contains data about wireless packages sent from multiple devices to different networks (SSID).
+
+Write a query that returns, for each SSID, the largest number of packages sent by a single device in the first 10 minutes of January 1st, 2022.
+
+Solution:-
+WITH dataAll AS(
+    SELECT ssid,mac_address,
+COUNT(*) AS max_number_of_packages_sent
+FROM packet_rates
+WHERE DATE(time_captured)='2022-01-01'
+AND MINUTE(time_captured)<'10'
+GROUP BY ssid,mac_address
+)
+SELECT ssid, MAX(max_number_of_packages_sent) AS max_number_of_packages_sent FROM dataAll
+GROUP BY ssid
