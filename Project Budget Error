@@ -1,0 +1,38 @@
+LEVEL:-EASY
+COMPANY:-Disney Star
+URL:-https://www.interviewquery.com/questions/project-budget-error
+
+Question:-
+We’re given two tables. One is named projects and the other maps employees to the projects they’re working on. 
+
+We want to select the five most expensive projects by budget to employee count ratio. 
+But let’s say that we’ve found a bug where there exist duplicate rows in the employee_projects table.
+
+Write a query to account for the error and select the top five most expensive projects by budget to employee count ratio.
+
+Solution-1:-
+WITH projectEmp AS (
+    SELECT project_id, employee_id
+        FROM employee_projects
+        GROUP BY 1,2
+),
+empCountPerProject AS (
+SELECT project_id, COUNT(*) AS totalEmp
+FROM projectEmp
+GROUP BY project_id
+)
+SELECT projects.title,
+projects.budget/totalEmp AS budget_per_employee
+FROM empCountPerProject INNER JOIN projects
+ON empCountPerProject.project_id=projects.id
+ORDER BY budget_per_employee DESC
+LIMIT 5;
+
+Solution-2:-
+SELECT ROUND((projects.budget / COUNT(DISTINCT employee_id)), 2) AS budget_per_employee,
+       projects.title
+FROM employee_projects
+INNER JOIN projects ON employee_projects.project_id = projects.id
+GROUP BY projects.title, projects.budget
+ORDER BY budget_per_employee DESC
+LIMIT 5;
