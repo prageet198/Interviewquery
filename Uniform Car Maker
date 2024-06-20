@@ -1,0 +1,11 @@
+LEVEL:-EASY
+COMPANY:-Meta
+URL:-https://www.interviewquery.com/questions/uniform-car-maker
+
+Question:-
+Given a table of cars with columns id and make, write a query that outputs a random manufacturer’s name with an equal probability of selecting any name.
+
+Solution:- In MYSQL
+SELECT DISTINCT make FROM cars
+ORDER BY RAND()
+LIMIT 1;
