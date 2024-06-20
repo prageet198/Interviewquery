@@ -1,0 +1,17 @@
+LEVEL:-EASY
+COMPANY:-Meta
+URL:-https://www.interviewquery.com/questions/ticket-agent-analysis
+
+Question:-
+The support team at your company is trying to analyze ticketing data to improve response times. They have noticed that a significant number of tickets 
+have no assigned agent, making it difficult to track the progress of these tickets.
+
+Write a SQL query to count the total number of tickets, the number of tickets assigned to agents, and the number of tickets that are not assigned to any agent.
+
+Note: Tickets that are not assigned to any agent have NULL in their agent_id field.
+
+Solution:-
+SELECT COUNT(*) AS total_tickets,
+SUM(CASE WHEN agent_id IS NOT NULL THEN 1 END) AS tickets_with_agent,
+SUM(CASE WHEN agent_id IS NULL THEN 1 END) AS tickets_without_agent
+FROM tickets
