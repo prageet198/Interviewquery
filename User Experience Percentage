@@ -1,0 +1,50 @@
+LEVEL:-MEDIUM
+COMPANY:-Linked-In
+URL:-https://www.interviewquery.com/questions/user-experience-percentage
+
+Question:-
+Given a table called user_experiences, write a query to determine the percentage of users that held the title of “Data Analyst” 
+immediately before holding the title “Data Scientist”.
+
+Immediate is defined as the user holding no other titles between the “Data Analyst” and “Data Scientist” roles.
+
+Solution-1:-
+WITH totalUsers AS(
+SELECT COUNT(DISTINCT user_id) AS tc
+FROM user_experiences
+),
+onlyDataAnalyst AS(
+    SELECT user_id,
+     position_name,
+     LAG (position_name,1,position_name) OVER(PARTITION BY user_id ORDER BY start_date) AS prevPost
+    FROM user_experiences
+),
+studentCount AS(
+    SELECT COUNT(DISTINCT user_id) As totalStudent FROM onlyDataAnalyst
+WHERE prevpost='Data Analyst' AND position_name='Data Scientist'
+)
+SELECT (totalStudent::float/tc) AS percentage
+FROM studentCount,totalUsers
+
+Solution-2:-
+WITH added_previous_role AS (
+  SELECT user_id, position_name,
+  LAG (position_name) 
+  OVER (PARTITION BY user_id) 
+  AS previous_role
+  FROM user_experiences
+),
+ 
+experienced_subset AS (
+  SELECT *
+  FROM added_previous_role
+  WHERE position_name = 'Data Scientist' 
+    AND previous_role = 'Data Analyst'
+)
+ 
+SELECT COUNT(DISTINCT experienced_subset.user_id)/
+     COUNT(DISTINCT user_experiences.user_id) 
+AS percentage
+FROM user_experiences
+LEFT JOIN experienced_subset 
+    ON user_experiences.user_id = experienced_subset.user_id
