@@ -1,0 +1,19 @@
+LEVEL:-EASY
+COMPANY:-Amazon
+URL:-https://www.interviewquery.com/questions/total-transactions
+
+Question:-
+Write a query to get the cost of all transactions by user ordered by total cost descending.
+
+Solution:-
+SELECT 
+ u.name
+ ,u.id AS user_id
+ ,ROUND(SUM(p.price * t.quantity ) ,2) AS total_cost 
+FROM users u 
+INNER JOIN transactions t 
+    ON u.id = t.user_id 
+INNER JOIN products p 
+    ON p.id = t.product_id 
+GROUP BY u.name 
+ORDER BY total_cost DESC
