@@ -1,0 +1,19 @@
+LEVEL:-EASY
+COMPANY:-Amazon
+URL:-https://www.interviewquery.com/questions/download-facts
+
+Question:-
+Given two tables: accounts, and downloads, find the average number of downloads for free vs paying accounts, broken down by day.
+
+Note: You only need to consider accounts that have had at least one download before when calculating the average.
+
+Note: round average_downloads to 2 decimal places.
+
+Solution:-
+SELECT download_date, 
+CASE WHEN paying_customer='false' THEN 0 ELSE 1 END AS paying_customer, 
+AVG(downloads) AS average_downloads
+FROM accounts INNER JOIN downloads 
+ON accounts.account_id=downloads.account_id
+GROUP BY download_date, paying_customer
+ORDER BY download_date,paying_customer
