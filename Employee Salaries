@@ -1,0 +1,25 @@
+LEVEL:-MEDIUM
+COMPANY:-Meta
+URL:-https://www.interviewquery.com/questions/employee-salaries
+
+Question:-
+Given a employees and departments table, select the top 3 departments with at least ten employees 
+and rank them according to the percentage of their employees making over 100K in salary.
+
+Solution:-
+WITH combineData AS(
+SELECT departments .name AS department_name,
+COUNT(*) AS number_of_employees,
+SUM(CASE WHEN salary>100000 THEN 1 END) AS 100kEmp
+FROM employees INNER JOIN departments 
+ON employees.department_id=departments.id
+GROUP BY departments.name
+)
+
+SELECT department_name,
+number_of_employees,
+(100kEmp/number_of_employees) AS percentage_over_100k
+FROM combineData
+WHERE number_of_employees>=10
+ORDER BY 3
+LIMIT 3
