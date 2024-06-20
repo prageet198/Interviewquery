@@ -1,0 +1,24 @@
+LEVEL:-MEDIUM
+COMPANY:-Amazon
+URL:-https://www.interviewquery.com/questions/upsell-transactions
+
+Question:-
+We’re given a table of product purchases. Each row in the table represents an individual user product purchase.
+
+Write a query to get the number of customers that were upsold, or in other words, the number of users who bought additional products after their first purchase.
+
+Note: If the customer purchased two things on the same day, that does not count as an upsell, as they were purchased within a similar timeframe.
+
+Solution:-
+SELECT COUNT(DISTINCT(user_id)) AS num_of_upsold_customers
+FROM (
+    SELECT user_id, created_at
+FROM transactions 
+WHERE user_id IN (SELECT user_id
+FROM transactions
+GROUP BY user_id
+HAVING COUNT(*)>1)
+GROUP BY 1,2
+HAVING COUNT(*)=1
+)AS A
+ORDER BY 1
