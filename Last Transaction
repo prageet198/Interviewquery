@@ -1,0 +1,20 @@
+LEVEL:-EASY
+COMPANY:-Meta
+URL:-https://www.interviewquery.com/questions/last-transaction
+
+Question:-
+Given a table of bank transactions with columns id, transaction_value, and created_at representing the date and time for each transaction, 
+write a query to get the last transaction for each day.
+
+The output should include the id of the transaction, datetime of the transaction, and the transaction amount. Order the transactions by datetime.
+
+Solution:-
+WITH allData AS(
+    SELECT *,
+ROW_NUMBER() OVER(PARTITION BY DATE(created_at) ORDER BY created_at DESC)AS rn
+FROM bank_transactions
+)
+
+SELECT id, created_at, transaction_value
+FROM allData
+WHERE rn='1'
