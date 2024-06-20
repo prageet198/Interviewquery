@@ -1,0 +1,23 @@
+LEVEL:-EASY
+COMPANY:-Yahoo
+URL:-https://www.interviewquery.com/questions/daily-logins
+
+Question:-
+Let’s say we are given a table user_logins.
+
+Using this table, calculate how many users logged in an identical number of times on January 1st, 2022.
+
+For example, it may be the case that on that date three users logged in seven times, four users logged in five times, two users logged in ten times, etc.
+
+Solution:-
+WITH overalldata AS (
+    SELECT COUNT(user_id) AS number_of_logins
+FROM user_logins
+WHERE EXTRACT(YEAR FROM login_date)='2022' 
+AND EXTRACT(DAY FROM login_date)='01'
+AND EXTRACT(MONTH FROM login_date)='01'
+GROUP BY user_id
+)
+SELECT number_of_logins, COUNT(*) AS number_of_users
+FROM overalldata
+GROUP BY number_of_logins
