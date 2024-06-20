@@ -1,0 +1,38 @@
+LEVEL:-MEDIUM
+COMPANY:-Meta
+URL:-https://www.interviewquery.com/questions/identifying-user-sessions
+
+Question:-
+Suppose you have an events table that tracks user activities on a website. Write a query to identify and label each event with a session number. 
+All events in the same session should be labeled with the same session number.
+
+Note: A session is defined as a series of consecutive events for a user that are within 60 minutes of each other.
+
+i.e. If a user has a series of events at 00:01:00, 00:30:00, 01:01:00, this would be considered 1 session but a series 
+of events at 00:01:00, 00:30:00, 01:31:00 would be 2 sessions.
+
+Solution:-
+WITH combineData AS (
+    SELECT *,
+           LAG(created_at, 1, created_at) OVER (PARTITION BY user_id ORDER BY created_at) AS previous_event_time
+    FROM events
+),
+calculation AS (
+    SELECT 
+        created_at,
+        user_id,
+        event,
+        TIMESTAMPDIFF(MINUTE, previous_event_time, created_at) AS duration_minutes,
+        CASE
+            WHEN TIMESTAMPDIFF(MINUTE, previous_event_time, created_at) > 60 OR previous_event_time = created_at THEN 1
+            ELSE 0
+        END AS new_session_flag
+    FROM combineData
+)
+SELECT 
+    created_at,
+    user_id,
+    event,
+    SUM(new_session_flag) OVER (PARTITION BY user_id ORDER BY created_at) AS session_id
+FROM calculation
+ORDER BY user_id, created_at;
