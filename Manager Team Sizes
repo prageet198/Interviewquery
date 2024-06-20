@@ -1,0 +1,16 @@
+LEVEL:-EASY
+COMPANY:-Amazon
+URL:-https://www.interviewquery.com/questions/manager-team-sizes
+
+Question:-
+Write a query to identify the manager with the biggest team size.
+
+You may assume there is only one manager with the largest team size.
+
+Solution:-
+SELECT managers.name AS manager, COUNT(*) AS team_size
+FROM employees INNER JOIN managers 
+ON employees.manager_id=managers.id
+GROUP BY managers.name
+ORDER BY team_size DESC
+LIMIT 1
