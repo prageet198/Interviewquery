@@ -1,0 +1,17 @@
+LEVEL:-EASY
+COMPANY:-Amazon
+URL:-https://www.interviewquery.com/questions/max-quantity
+
+Question:-
+Given the transactions table, write a query to get the max quantity purchased for each distinct product_id, every year. 
+
+The output should include the year, product_id, and max_quantity for that product sorted by year and product_id ascending.
+
+Solution:-
+SELECT  
+EXTRACT(YEAR FROM created_at) AS year,
+product_id,
+MAX(quantity) AS max_quantity
+FROM transactions
+GROUP BY 1,2
+ORDER BY 1,2
