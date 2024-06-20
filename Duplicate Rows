@@ -1,0 +1,12 @@
+LEVEL:-MEDIUM
+COMPANY:-Amazon
+URL:-https://www.interviewquery.com/questions/duplicate-rows
+
+Question:-
+Given a users table, write a query to return only its duplicate rows.
+
+Solution:-
+SELECT created_at, id, name
+FROM users
+GROUP BY name,created_at
+HAVING COUNT(*)>1
