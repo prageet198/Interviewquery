@@ -1,0 +1,35 @@
+LEVEL:-MEDIUM
+COMPANY:-Cognizant
+URL:-https://www.interviewquery.com/questions/atm-robbery
+
+Question:-
+There was a robbery from the ATM at the bank where you work. Some unauthorized withdrawals were made, and you need to help your bank 
+find out more about those withdrawals.
+
+However, the only information you have is that there was more than 1 withdrawal, they were all performed in 10-second gaps, 
+and no legitimate transactions were performed in between two fraudulent withdrawals.
+
+We’re given a table of bank transactions with three columns, user_id, a deposit or withdrawal value transaction_value, and created_at time for each transaction.
+
+Write a query to retrieve all user IDs in ascending order whose transactions have exactly a 10-second gap from one another.
+
+Note: Assume that there are only withdrawals from the ATM, which are denoted with a positive transaction_value
+
+Solution:-
+WITH completeData AS(
+    SELECT user_id,
+created_at,
+LAG(user_id,1) OVER(ORDER BY created_at) AS prevUserId,
+LAG(created_at,1) OVER(ORDER BY created_at) AS prevTransaction
+FROM bank_transactions ORDER BY created_at
+),
+calculation AS(
+SELECT *,
+EXTRACT(EPOCH FROM (created_at - prevTransaction)) AS diffSec
+FROM completeData
+)
+SELECT DISTINCT(bank_transactions.user_id)
+FROM calculation INNER JOIN bank_transactions 
+ON calculation.user_id=bank_transactions.user_id OR
+calculation.prevuserid=bank_transactions.user_id
+WHERE diffSec='10'
