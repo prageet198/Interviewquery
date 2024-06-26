@@ -1,0 +1,30 @@
+LEVEL:-MEDIUM
+COMPANY:-Spotify
+URL:-https://www.interviewquery.com/questions/third-unique-song
+
+Question:-
+Given a table of song_plays and a table of users, write a query to extract the earliest date each user played their third unique song.
+
+Note: If a user has listened to less than three unique songs, display their name but with a NULL date and song name
+
+Solution:-
+WITH calculation AS (
+SELECT user_id,
+song_name,
+MIN(date_played) AS playedDate,
+ROW_NUMBER() OVER(PARTITION BY user_id) AS rn
+FROM song_plays
+GROUP BY user_id, song_name
+),
+filterData AS (
+SELECT user_id,
+song_name,
+playedDate AS date_played
+FROM calculation
+WHERE rn='3'
+)
+SELECT users.name,
+song_name,
+date_played
+FROM users LEFT JOIN filterData
+ON users.id=filterData.user_id
