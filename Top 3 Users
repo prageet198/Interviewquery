@@ -1,0 +1,23 @@
+LEVEL:-MEDIUM
+COMPANY:-Google
+URL:-https://www.interviewquery.com/questions/top-3-users
+
+
+Question:-
+Let’s say you work at a file-hosting website. You have information on user’s daily downloads in the download_facts table
+
+Use the window function RANK to display the top three users by downloads each day. Order your data by date, and then by daily_rank
+
+
+Solution:-
+WITH combineData AS (
+SELECT date,
+user_id,
+downloads,
+RANK() OVER (PARTITION BY date ORDER BY downloads DESC) AS daily_rank
+FROM download_facts
+)
+
+SELECT * FROM combineData
+WHERE daily_rank<=3
+ ORDER BY date, daily_rank
