@@ -1,0 +1,13 @@
+LEVEL:-MEDIUM
+COMPANY:-Amazon
+URL:-https://www.interviewquery.com/questions/project-pairs
+
+Question:-
+Write a query to return pairs of projects where the end date of one project matches the start date of another project. 
+
+Solution:-
+SELECT p1.end_date AS date,
+p1.title AS project_title_end,
+p2.title AS project_title_start
+FROM projects AS p1 INNER JOIn projects AS p2
+ON p1.end_date=p2.start_date
