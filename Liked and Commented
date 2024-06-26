@@ -1,0 +1,26 @@
+LEVEL:-MEDIUM
+COMPANY:-Meta
+URL:-https://www.interviewquery.com/questions/liked-and-commented
+
+Question:-
+You’re given two tables, users and events. The events table holds values of all of the user events in the action column (‘like’, ‘comment’, or ‘post’).
+
+Write a query to get the percentage of users that have never liked or commented. Round to two decimal places.
+
+Solution:-
+
+WITH totalUser AS (
+    SELECT COUNT(*) AS totalRegisteredUsers
+    FROM users
+),
+neverUsers AS (
+    SELECT COUNT(*) AS totalNeverUsers
+    FROM users
+    WHERE id NOT IN (
+        SELECT DISTINCT user_id
+        FROM events
+        WHERE action IN ('like', 'comment')
+    )
+)
+SELECT ROUND((neverUsers.totalNeverUsers::numeric) / totalUser.totalRegisteredUsers,2) AS percent_never
+FROM totalUser, neverUsers;
