@@ -1,0 +1,22 @@
+LEVEL:-MEDIUM
+COMPANY:-United Health
+URL:-https://www.interviewquery.com/questions/released-patients
+
+Question:-
+A hospital is studying patient flows to optimize their resource placement.
+
+Write a query to find all dates where the hospital released more patients than the day prior.
+
+Note: You may assume that the table has no missing dates.
+
+Solution:-
+WITH combineData AS (
+SELECT release_date,
+released_patients,
+LAG(released_patients,1,released_patients) OVER() AS previousReleased
+FROM released_patients
+)
+SELECT release_date,
+released_patients
+FROM combineData
+WHERE released_patients>previousreleased
