@@ -1,0 +1,25 @@
+LEVEL:-MEDIUM
+COMPANY:-Nike
+URL:-https://www.interviewquery.com/questions/rolling-average-steps
+
+Question:-
+As a data analyst in a fitness app company, you are tasked with analyzing the user’s daily step count.
+
+Write a SQL query to calculate the 3-day rolling average of steps for each user, rounded to the nearest whole number.
+
+Notes: The rolling average should only be calculated for days where there are 3 previous days of step counts, including the current day. 
+The first 2 days for any user should be excluded.
+
+Solution:-
+SELECT t1.user_id,
+       t1.date,
+       ROUND((t1.steps + t2.steps + t3.steps)/3, 0) AS avg_steps
+FROM daily_steps t1
+LEFT JOIN daily_steps t2 
+	ON t1.user_id = t2.user_id
+	AND t1.date = date_add(t2.date, interval 1 DAY)
+    LEFT JOIN daily_steps t3 
+	ON t1.user_id = t3.user_id
+	AND t1.date = date_add(t3.date, interval 2 DAY)
+    WHERE t2.steps IS NOT NULL
+    AND t3.steps IS NOT NULL
