@@ -1,0 +1,16 @@
+LEVEL:-MEDIUM
+COMPANY:-Amazon
+URL:-https://www.interviewquery.com/questions/monthly-product-sales
+
+Question:-
+Given a table containing data for monthly sales, write a query to find the total amount of each product sold for 
+each month with each product as its own column in the output table.
+
+Solution:-
+SELECT DATE(month) AS month,
+  SUM(CASE WHEN product_id = 1 THEN amount_sold ELSE 0 END) AS '1',
+  SUM(CASE WHEN product_id = 2 THEN amount_sold ELSE 0 END) AS '2',
+  SUM(CASE WHEN product_id = 3 THEN amount_sold ELSE 0 END) AS '3',
+  SUM(CASE WHEN product_id = 4 THEN amount_sold ELSE 0 END) AS '4'
+FROM monthly_sales
+GROUP BY month;
