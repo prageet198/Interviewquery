@@ -1,0 +1,39 @@
+LEVEL:-MEDIUM
+COMPANY:-Amazon
+URL:-https://www.interviewquery.com/questions/cumulative-sales-since-last-restocking
+
+Question:-
+As an accountant for a local grocery store, you have been tasked with calculating the daily sales of each product since their last restocking.
+
+You have been provided with three tables: products, sales, and restocking. The products table contains information about each product, 
+the sales table records the sales transactions, and the restocking table tracks the restocking events.
+
+Write a query to retrieve the running total of sales for each product since its last restocking event.
+
+Notes: The sales_since_last_restock column represents the cumulative sales of the product for each day since its 
+last restocking event. Order the result set by product_id.
+
+Solution:-
+WITH restockingCalculation AS (
+    SELECT product_id,
+    MAx(restock_date) AS currentRestockDate
+    FROM restocking
+    GROUP BY 1
+),
+combineData AS (
+SELECT sales.product_id,
+sales.date AS salesDate,
+sales.sold_count,
+restockingCalculation.currentRestockDate AS restockDate,
+CASE WHEN (sales.date>=restockingCalculation.currentRestockDate) 
+THEN 1 ELSE 0 END AS flag
+FROM sales INNER JOIN restockingCalculation
+ON sales.product_id=restockingCalculation.product_id
+)
+SELECT products.product_name,
+salesDate AS date,
+SUM(sold_count) OVER(PARTITION BY products.product_name ORDER BY salesDate)
+AS sales_since_last_restock
+FROM combineData INNER JOIN products
+ON combineData.product_id=products.product_id
+WHERE flag='1'
