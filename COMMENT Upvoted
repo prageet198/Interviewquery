@@ -1,0 +1,23 @@
+LEVEL:-MEDIUM
+COMPANY:-Reditt
+URL:-https://www.interviewquery.com/questions/comment-upvotes
+
+Question:-
+We’re given three tables representing a forum of users and their comments on posts.
+
+Write a query to get the top three users that got the most upvotes on their comments written in 2020. 
+
+Note: Do not count deleted comments and upvotes by users on their own comments
+
+Solution:-
+SELECT
+comments.user_id AS id,
+users.username,
+COUNT(*) AS upvotes
+from comments LEFT JOIN comment_votes 
+ON comments.id=comment_votes.comment_id AND is_deleted='0'
+INNER JOIN users ON users.id=comments.user_id
+WHERE YEAR(comments.created_at)='2020' AND is_upvote='1'
+GROUP BY comments.user_id, users.username
+ORDER BY COUNT(*) DESC
+LIMIT 3
