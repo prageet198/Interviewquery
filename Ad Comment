@@ -1,0 +1,32 @@
+LEVEL:-MEDIUM
+COMPANY:-Next Door
+URL:-https://www.interviewquery.com/questions/ad-comments
+
+Question:-
+You’re given three tables.
+
+An ads table holds an ID and the advertisement name like “Labor day shirts sale”. The feed_comments table holds the comments on ads by different 
+users that occur in the regular feed. The moments_comments table holds the comments on ads by different users in the moments section.
+
+Write a query to get the percentage of comments, by ad, that occurs in the feed versus mentions sections of the app.
+
+Solution:-
+WITH feedCmt AS (
+SELECT ad_id,
+COUNT(DISTINCT user_id) AS totalFeedComment
+FROM feed_comments
+GROUP BY ad_id
+),
+momentsCmt AS (
+    SELECT ad_id,
+    COUNT(DISTINCT user_id) AS totalMomentComment
+    FROM moments_comments
+    GROUP BY ad_id
+)
+SELECT ads.name,
+(totalFeedComment)/(totalFeedComment+totalMomentComment) AS percentage_feed,
+(totalMomentComment)/(totalFeedComment+totalMomentComment)AS percentage_moments
+FROM ads LEFT JOIN momentsCmt
+ON ads.id=momentsCmt.ad_id
+LEFT JOIN feedCmt
+ON ads.id=feedCmt.ad_id
