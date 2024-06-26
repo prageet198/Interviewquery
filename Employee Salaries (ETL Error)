@@ -1,0 +1,27 @@
+LEVEL:-MEDIUM
+COMPANY:-Adobe
+URL:-https://www.interviewquery.com/questions/employee-salaries-etl-error
+
+Question:-
+Due to an ETL error, the employees table, instead of updating the salaries every year when doing compensation adjustments, did an insert instead. 
+The head of HR still needs the current salary of each employee.
+
+Write a query to get the current salary for each employee.
+
+Note: Assume no duplicate combination of first and last names (I.E. No two John Smiths). Assume the INSERT operation works with ID autoincrement.
+
+Solution:-
+WITH combineData AS(
+SELECT first_name,
+last_name,
+salary,
+ROW_NUMBER() OVER (PARTITION BY first_name,last_name
+ORDER BY id DESC) AS ranked
+FROM employees
+)
+SELECT first_name,
+last_name,
+salary
+FROM combineData
+WHERE ranked='1'
+ORDER BY first_name, last_name
