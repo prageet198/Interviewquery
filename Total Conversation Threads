@@ -1,0 +1,17 @@
+LEVEL:-MEDIUM
+COMPANY:-Meta
+URL:-https://www.interviewquery.com/questions/total-conversation-threads
+
+Question:-
+Let’s say you work for Meta. You are given the table messenger_sends. Find the total number of unique conversation threads.
+
+Note: In some entries, the receiver_id and sender_id are switched from the initial message. These entries should be treated as part of the same thread.
+
+Solution:-
+SELECT COUNT(DISTINCT 
+             CASE WHEN sender_id < receiver_id 
+                  THEN CONCAT(sender_id, '_', receiver_id) 
+                  ELSE CONCAT(receiver_id, '_', sender_id) 
+             END
+           ) AS total_conv_threads
+FROM messenger_sends ;
