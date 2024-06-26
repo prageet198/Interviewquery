@@ -1,0 +1,37 @@
+LEVEL:-MEDIUM
+COMPANY:-Amazon
+URL:-https://www.interviewquery.com/questions/transactions-in-the-last-5-days
+
+Question:-
+Let’s say you work at a bank.
+
+Using the bank_transactions table, find how many users made at least one transaction each day in the first five days of January 2020.
+
+Solution:-
+WITH completeData AS (
+SELECT user_id,
+DATE(created_at) AS transactionDate
+FROM bank_transactions
+),
+previousDate AS(
+SELECT user_id,
+transactiondate,
+LAG(transactiondate,1) OVER(PARTITION BY user_id) AS prevDate
+FROM completeData
+),
+calculation AS (
+SELECT * ,
+CASE WHEN prevDate IS NULL THEN '1'
+ELSE
+(transactionDate - prevDate)::int END AS flag
+FROM previousDate
+),
+overallUsers AS(
+SELECT user_id,
+COUNT(*) AS totalTransactions
+FROM calculation
+WHERE flag=1 AND transactionDate BETWEEN '2020-01-01' AND '2020-01-05'
+GROUP BY user_id
+HAVING COUNT(*)=5
+)
+SELECT COUNT(*) AS number_of_users FROM overallUsers
