@@ -1,0 +1,16 @@
+LEVEL:-MEDIUM
+COMPANY:-Microsoft
+URL:-https://www.interviewquery.com/questions/hr-salary-reporting
+
+Question:-
+The HR department in your organization wants to calculate employees’ earnings.
+
+Write a query to report the sum of regular salaries, overtime pay, and total compensations for each role.
+
+Solution:-
+SELECT job_title,
+SUM(salary) AS total_salaries,
+SUM (overtime_hours*overtime_rate) AS total_overtime_payments,
+(SUM(salary) + SUM (overtime_hours*overtime_rate)) AS total_compensation
+FROM employees
+GROUP BY 1
