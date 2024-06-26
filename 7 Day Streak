@@ -1,0 +1,44 @@
+LEVEL:-MEDIUM
+COMPANY:-Amazon
+URL:-https://www.interviewquery.com/questions/seven-day-streak
+
+Question:-
+Given a table with event logs, find the percentage of users that had at least one seven-day streak of visiting the same URL.
+
+Note: Round the results to 2 decimal places. For example, if the result is 35.67% return 0.35.
+
+Solution:-
+WITH combineData AS(
+SELECT user_id,
+created_at,
+url,
+LAG(url,1,url) OVER(PARTITION BY user_id) AS prevUrl,
+DATEDIFF(created_at, LAG(created_at,1,created_at) OVER(PARTITION BY user_id))
+AS day_diff
+FROM events
+),
+grouped AS (
+SELECT *,
+SUM(CASE WHEN day_diff > 1 THEN 1 
+WHEN day_diff IN (0,1) AND (url=prevUrl) THEN 0 END) OVER (PARTITION BY user_id ORDER BY created_at ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS group_id
+FROM combineData
+),
+totalValues AS (
+SELECT user_id,
+group_id,
+COUNT(*) AS toatlStreak
+ FROM grouped
+ GROUP BY user_id,group_id
+ HAVING(COUNT(*))>=7
+),
+totalStreakUsers AS(
+SELECT COUNT(*) AS tt FROM totalValues
+),
+totalUsers AS(
+    SELECT COUNT(DISTINCT user_id) AS allUsers FROM events
+)
+
+SELECT CASE WHEN tt=0 THEN 0
+ELSE
+ROUND((tt/allUsers),2) END AS percent_of_users
+FROM totalUsers,totalStreakUsers
