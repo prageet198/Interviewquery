@@ -1,0 +1,28 @@
+LEVEL:-MEDIUM
+COMPANY:-Alibaba
+URL:-https://www.interviewquery.com/questions/categorize-sales
+
+Question:-
+An electronics retail company tracks its sales and wants to run a performance analysis. They’re hoping to categorize sales into different groups, 
+based on the amount of sales and the region where the sale occurred. The conditions for categorization are:
+
+    Standard Sales: Any sales below 2000 are considered standard, except if they occur in the East region, or in the month of July.
+    Premium Sales: Any sales that are over or equal to 2000, or any sales in the East region (regardless of the amount), are considered premium, 
+	except again during the month of July.
+    Promotional Sales: All sales made in the promotional period of July, regardless of the amount or region, are considered promotional.
+
+The company wants a report that sums these amounts by region to help with financial planning and bonus allocations.
+
+Note: You may assume that table contains data only for 2023
+
+Solution:-
+SELECT region,
+coalesce(SUM(CASE WHEN sale_amount<2000 AND region!='East' AND
+EXTRACT(MONTH FROM sale_date)!='7' THEN sale_amount END),0) AS standard_sales,
+coalesce(SUM(CASE WHEN (sale_amount>=2000 AND region 
+IN ('North','South','West')) OR region='East'
+AND EXTRACT(MONTH FROM sale_date)!='7' THEN sale_amount END),0) AS premium_sales,
+coalesce(SUM(CASE WHEN EXTRACT(MONTH FROM sale_date)='7' THEN sale_amount END),0) AS promotional_sales,
+SUM(sale_amount) AS total_sales
+FROM sales
+GROUP BY 1
