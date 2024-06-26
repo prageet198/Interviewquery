@@ -1,0 +1,32 @@
+LEVEL:-MEDIUM
+COMPANY:-Meta
+URL:-https://www.interviewquery.com/questions/sms-confirmations
+
+Question:-
+The sms_sends table contains all the messages sent to the users and may contain various message types.
+
+Confirmation messages (type = "confirmation") are sent when a user registers an account and requires a response. 
+The system may send multiple confirmation messages to a single phone number, but the user may confirm only the latest one sent to them.
+
+The ds column represents the date when SMSs are sent.
+
+The confirmers table contains phone numbers that responded to confirmation messages and dates when users responded.
+
+Write a query to calculate the number of responses grouped by carrier and country to the SMSs sent by the system on February 28th, 2020.
+
+Solution:-
+WITH modify_data AS 
+(
+  SELECT DATE(ds) sent_date, country,carrier, 
+  DATE(LAG(ds) OVER (PARTITION BY phone_number,country,carrier ORDER BY ds DESC)) as next_date,phone_number 
+  FROM sms_sends 
+  WHERE TYPE = 'confirmation'  
+), 
+filtered_data AS 
+(
+  SELECT a.* FROM modify_data a 
+  JOIN confirmers b ON a.phone_number = b.phone_number
+  WHERE sent_date  ='2020-02-28' and next_date IS NULL
+)
+SELECT carrier,country, count(*) unique_numbers 
+FROM filtered_data GROUP BY country,carrier
