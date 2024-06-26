@@ -1,0 +1,47 @@
+LEVEL:-MEDIUM
+COMPANY:-Meta
+URL:-https://www.interviewquery.com/questions/longest-streak-users
+
+Question:-
+Given a table with event logs, find the top five users with the longest continuous streak of visiting the platform.
+
+Note: A continuous streak counts if the user visits the platform at least once per day on consecutive days.
+
+Solution:-
+WITH uniqueData AS (
+    SELECT 
+        user_id,
+        DATE(created_at) AS visitDate
+    FROM 
+        events 
+    GROUP BY 
+        user_id, 
+        DATE(created_at)
+),
+ranked_log AS (
+    SELECT 
+        user_id,
+        visitDate,
+        DATEDIFF(visitDate, LAG(visitDate, 1, visitDate) OVER (PARTITION BY user_id ORDER BY visitDate)) AS day_diff
+    FROM 
+        uniqueData
+),
+grouped AS (
+    SELECT 
+    *,
+     SUM(CASE WHEN day_diff > 1 THEN 1 ELSE 0 END) OVER (PARTITION BY user_id ORDER BY visitDate ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS group_id
+FROM ranked_log
+),
+calculation AS (
+SELECT user_id,
+group_id,
+COUNT(*) AS streak_length
+FROM grouped
+GROUP BY user_id, group_id
+)
+SELECT MAX(streak_length) AS streak_length,
+user_id
+FROM calculation
+GROUP BY user_id
+ORDER BY 1 DESC,2
+LIMIT 5
