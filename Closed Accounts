@@ -1,0 +1,32 @@
+LEVEL:-MEDIUM
+COMPANY:-Meta
+URL:-https://www.interviewquery.com/questions/closed-accounts
+
+Question:-
+Given a table of account statuses, write a query to get the percentage of accounts that were active on December 31st, 2019, 
+and closed on January 1st, 2020, over the total number of accounts that were active on December 31st. 
+Each account has only one daily record indicating its status at the end of the day.
+
+Solution:-
+WITH decMonth AS (
+SELECT account_id,
+status AS decStatus
+FROM account_status
+WHERE date='2019-12-31' AND status='open'
+),
+janMonth AS (
+SELECT account_id,
+status AS janStatus
+FROM account_status
+WHERE date='2020-01-01'
+),
+calculation AS (
+SELECT 
+SUM(CASE WHEN decstatus='open' THEN 1 ELSE 0 END) AS decTotal,
+SUM(CASE WHEN (decstatus='open' AND janstatus='closed') 
+THEN 1 ELSE 0 END) AS janTotal
+FROM decMonth INNER JOIN janMonth
+ON decMonth.account_id=janMonth.account_id
+)
+SELECT (janTotal::float/decTotal) AS percentage_closed
+FROM calculation
