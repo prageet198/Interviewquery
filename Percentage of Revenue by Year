@@ -1,0 +1,45 @@
+LEVEL:-MEDIUM
+COMPANY:-Amazon
+URL:-https://www.interviewquery.com/questions/percentage-of-revenue-by-year
+
+Question:-
+You are generating a yearly report for your company’s revenue sources.
+
+Calculate the percentage of all total revenue made to date that was made during the first and last years recorded in the table. 
+Round the percentages to two decimal places.
+
+Solution:-
+WITH startingRevenue AS (
+    SELECT 
+        SUM(amount - amount_refunded) AS totalStartingRevenue
+    FROM 
+        annual_payments
+    WHERE 
+        status = 'paid' 
+        AND EXTRACT(YEAR FROM created_at) = (SELECT MIN(EXTRACT(YEAR FROM created_at)) FROM annual_payments)
+),
+endingRevenue AS (
+    SELECT 
+        SUM(amount - amount_refunded) AS totalEndingRevenue
+    FROM 
+        annual_payments
+    WHERE 
+        status = 'paid' 
+        AND EXTRACT(YEAR FROM created_at) = (SELECT MAX(EXTRACT(YEAR FROM created_at)) FROM annual_payments)
+),
+overallRevenue AS (
+    SELECT 
+        SUM(amount - amount_refunded) AS totalRevenue
+    FROM 
+        annual_payments
+    WHERE 
+        status = 'paid'
+)
+
+SELECT 
+    ROUND((sr.totalStartingRevenue::numeric / orr.totalRevenue::numeric) * 100.0, 2) AS percent_first,
+    ROUND((er.totalEndingRevenue::numeric / orr.totalRevenue::numeric) * 100.0, 2) AS percent_last
+FROM 
+    overallRevenue orr,
+    startingRevenue sr,
+    endingRevenue er;
