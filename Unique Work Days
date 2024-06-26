@@ -1,0 +1,70 @@
+LEVEL:-MEDIUM
+COMPANY:-Netapp
+URL:-https://www.interviewquery.com/questions/unique-work-days
+
+Question:-
+You have a table containing information about the time that employees have worked on a project.
+
+Write a query to find how many unique calendar days each employee worked. Order your query by the employee_id.
+
+Example:
+
+An employee worked on two projects, and recorded their time like this:
+employee_id 	project_id 	start_date 	end_date
+1 	1 	2024-01-01 	2024-01-06
+1 	2 	2024-01-03 	2024-01-07
+
+Solution:-
+-- Assuming PostgreSQL syntax for generate_series function
+SELECT
+    employee_id,
+    COUNT(DISTINCT unique_calendar_days) AS unique_days_worked
+FROM (
+    SELECT
+        employee_id,
+        generate_series(start_date, end_date, interval '1 day')::date AS unique_calendar_days
+    FROM
+        projects 
+) AS dates
+GROUP BY
+    employee_id
+ORDER BY
+    employee_id;
+	
+
+Solution-2:-
+WITH project_dates AS (
+    SELECT
+        employee_id,
+        start_date,
+        end_date,
+        LAG(end_date) OVER (PARTITION BY employee_id ORDER BY start_date) AS previous_end_date
+    FROM
+        projects
+),
+projectCalculationDate AS (
+    SELECT
+        *,
+        CASE WHEN start_date > previous_end_date OR previous_end_date IS NULL 
+        THEN start_date 
+        ELSE DATE_ADD(previous_end_date, INTERVAL 1 DAY) 
+        END AS projectStartDate
+    FROM
+        project_dates
+),
+employeeProjectDays AS(
+SELECT
+    employee_id,
+    start_date,
+    end_date,
+    previous_end_date,
+    projectStartDate,
+    DATEDIFF(end_date, projectStartDate)+1 AS totalDays
+FROM
+    projectCalculationDate
+)
+
+SELECT employee_id,
+SUM(totalDays) AS unique_days_worked
+FROM employeeProjectDays
+GROUP BY 1  
