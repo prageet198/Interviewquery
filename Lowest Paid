@@ -1,0 +1,16 @@
+LEVEL:-MEDIUM
+COMPANY:-Microsoft
+URL:-https://www.interviewquery.com/questions/lowest-paid
+
+Solution:-
+select employee_projects .employee_id,
+COUNT(employee_projects.project_id) AS completed_projects,
+employees.salary
+from employee_projects INNER JOIN projects 
+ON employee_projects.project_id=projects.id
+INNER JOIN employees ON employees .id=employee_projects .employee_id
+WHERE projects.end_date IS NOT NULL
+GROUP BY 1
+HAVING COUNT(employee_projects.project_id)>=2
+ORDER BY 3
+LIMIT 3
