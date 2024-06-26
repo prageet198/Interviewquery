@@ -1,0 +1,28 @@
+LEVEL:-MEDIUM
+COMPANY:-S&P Global
+URL:-https://www.interviewquery.com/questions/interpolating-missing-temperatures
+
+Question:-
+A climate research organization has a time-series dataframe with daily temperature readings for different cities. 
+This dataframe has three columns: date, city, and temperature.
+
+Due to data recording issues, the temperature reading for some days might be missing. The organization requires the temperature readings for each day, 
+so they ask you to interpolate the missing data.
+
+Write a Python function using Pandas that uses a linear interpolation to estimate the missing data and fill out the dataframe.
+
+Notes:
+
+    When estimating the missing values for a city, the interpolation should only consider data from the same city.
+    Temperature recording issues are rare, so you can assume that there is no missing data two days in a row.
+    You can also assume that both the first and the last dates in your dataframe hold valid temperature data.
+
+
+Solution:-
+SELECT date, city,temperature,
+    AVG(temperature) OVER ( 
+      PARTITION BY city
+      ORDER BY date
+      ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING) as moving_average
+FROM temperature_data
+ORDER BY city desc, date;
