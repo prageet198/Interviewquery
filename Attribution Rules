@@ -1,0 +1,46 @@
+LEVEL:-MEDIUM
+COMPANY:-Next Door
+URL:-https://www.interviewquery.com/questions/attribution-rules
+
+Question:-
+Write a query that creates an attribution rule for each user. If the user visited Facebook or Google at least once then the attribution is labeled as “paid.” 
+Otherwise, the attribution is labeled as “organic.”
+
+Solution-1:-
+WITH combineData AS (
+SELECT user_sessions.session_id,
+user_sessions.user_id,
+attribution.channel,
+CASE WHEN channel='facebook' OR channel='google' THEN 1 END AS flag
+FROM user_sessions INNER JOIN attribution 
+ON user_sessions.session_id=attribution .session_id
+),
+paidOnly AS (
+SELECT DISTINCT(user_id),
+"paid" AS attribute
+FROM combineData WHERE flag='1'
+),
+notPaid AS (
+SELECT DISTINCT(user_id),
+"organic" AS attribute
+FROM combineData WHERE flag IS NULL
+AND user_id NOT IN (SELECT user_id FROM paidOnly)
+)
+SELECT * FROM paidOnly
+UNION
+SELECT * FROM notPaid
+
+Solution-2:-
+WITH cte AS (
+    SELECT
+        user_id,
+        SUM(CASE WHEN (channel = 'Facebook' OR channel = 'Google') THEN 1 ELSE 0 END) AS paid_count
+    FROM user_sessions
+        JOIN attribution ON 
+            user_sessions.session_id = attribution.session_id
+    GROUP BY user_id)
+
+SELECT
+    user_id,
+    CASE WHEN paid_count >=1 THEN 'paid' ELSE 'organic' END AS attribute
+FROM cte
