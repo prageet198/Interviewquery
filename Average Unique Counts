@@ -1,0 +1,26 @@
+LEVEL:-MEDIUM
+COMPANY:-Amazon
+URL:-https://www.interviewquery.com/questions/average-number-of-unique-items-categories-per-order
+
+Question:-
+You have been provided with two tables: user_orders and ordered_items. A user can have multiple orders, and within each order, 
+there may be multiple items with either the same or different categories. Find a user that has the highest average number of unique item categories per order.
+
+Note: You may assume that there is only one user with the highest average number of unique item categories per order.
+
+Solution:-
+WITH combineData AS (
+SELECT ordered_items.order_id, 
+user_orders.user_name,
+COUNT(DISTINCT item_category) AS categoryCount
+FROM ordered_items INNER JOIN user_orders 
+ON ordered_items.order_id=user_orders.order_id
+GROUP BY ordered_items.order_id,user_orders.user_name
+ORDER BY ordered_items.order_id
+)
+SELECT user_name,
+AVG(categoryCount) AS avg_unique_item_categories_per_order
+FROM combineData
+GROUP BY user_name
+ORDER BY 2 DESC
+LIMIT 1
