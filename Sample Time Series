@@ -1,0 +1,20 @@
+TITLE:-Sample Time Series
+LEVEL:-MEDIUM
+COMPANY:-Amazon
+URL:-https://www.interviewquery.com/questions/sample-time-series
+
+Question:-
+Given a transactions table with date timestamps, sample every 4th row ordered by the date.
+
+Solution:-
+WITH RankedTransactions AS (
+    SELECT 
+        *,
+        ROW_NUMBER() OVER (ORDER BY created_at) AS row_num
+    FROM 
+        transactions 
+)
+SELECT created_at,
+product_id
+FROM RankedTransactions
+WHERE row_num % 4 = 0;
