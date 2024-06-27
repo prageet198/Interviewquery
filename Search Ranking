@@ -1,0 +1,33 @@
+LEVEL:-MEDIUM
+COMPANY:-Meta
+URL:-https://www.interviewquery.com/questions/search-ranking
+
+Question:-
+You’re given a table that represents search results from searches on Facebook. The query column is the search term, position column represents 
+each position the search result came in, and the rating column represents the human rating of the result from 1 to 5 where 5 is high relevance and 1 is low relevance.
+
+Write a query to get the percentage of search queries where all of the ratings for the query results are less than a rating of 3. 
+Please round your answer to two decimal points.
+
+Solution:-
+WITH calculation AS (
+SELECT query,
+rating,
+CASE WHEN rating IN (1,2) THEN 1 ELSE 0 END AS flag
+FROM search_results
+ORDER BY query
+),
+filterData AS(
+SELECT query
+FROM calculation
+GROUP BY query
+HAVING COUNT(*)=SUM(flag)
+),
+totalLessRatingUsers AS(
+SELECT COUNT(*) AS tt FROM filterData
+),
+totalQueries AS (
+SELECT COUNT(DISTINCT query) AS yy FROM search_results
+)
+SELECT ROUND((tt/yy),2) AS percentage_less_than_3
+FROM totalLessRatingUsers,totalQueries
