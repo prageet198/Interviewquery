@@ -1,0 +1,53 @@
+LEVEL:-MEDIUM
+COMPANY:-Meta
+URL:-https://www.interviewquery.com/questions/post-success
+
+Question:-Consider the events table which contains information about the phases of writing a new social media post.
+
+The action column can have values post_enter, post_submit, or post_canceled for when a user starts to write (post_enter), ends up 
+canceling their post (post_cancel), or posts it (post_submit).
+
+Write a query to get the post success rate for each day in the month of January 2020.
+
+You can assume that a single user may only make one post per day.
+
+Solution:-
+WITH overallUsers AS(
+SELECT
+DATE(created_at) AS userDate,
+COUNT(DISTINCT user_id) AS totalUsers
+FROM events 
+WHERE DATE(created_at) BETWEEN '2020-01-01' AND '2020-01-31'
+GROUP BY DATE(created_at)
+),
+overallSubmits AS (
+SELECT 
+DATE(created_at) AS submitDate,
+COUNT(id) AS totalSubmited
+FROM events
+WHERE DATE(created_at) BETWEEN '2020-01-01' AND '2020-01-31'
+AND action='post_submit'
+GROUP BY DATE(created_at)
+)
+
+SELECT overallUsers.userDate AS dt,
+CASE WHEN overallSubmits.submitDate IS NULL THEN 0
+ELSE
+(totalSubmited/totalUsers) END AS post_success_rate
+FROM overallUsers LEFT JOIN overallSubmits
+ON overallUsers.userDate=overallSubmits.submitDate
+
+Solution-2:-
+WITH stats AS ( 
+    SELECT user_id, created_at, 
+    SUM(CASE WHEN action = "post_enter" THEN 1 ELSE 0 END) AS started, 
+    SUM(CASE WHEN action = "post_submit" THEN 1 ELSE 0 END) AS posted
+    FROM events
+    where EXTRACT(YEAR_MONTH FROM created_at)  = "202001" 
+    GROUP BY user_id, created_at
+
+)
+SELECT Date(created_at) as dt, 
+(SUM(posted) / SUM(started)) AS post_success_rate 
+FROM stats 
+GROUP BY created_at
