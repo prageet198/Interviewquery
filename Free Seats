@@ -1,0 +1,25 @@
+LEVEL:-MEDIUM
+COMPANY:-Robinhood
+URL:-https://www.interviewquery.com/questions/free-seats
+
+Question:-
+Let’s say you work for a small airline. You’re given three tables: flights, planes, and flight_purchases.
+
+Write a query to find the number of unpurchased seats for each flight.
+
+For the purposes of this question, assume that there will be no entries in the flight_purchases table for flights or seats that do not exist.
+
+Solution:-
+WITH totalPurchased AS (
+SELECT flight_id,
+COUNT(*) AS totalPurchasedSeats
+FROM flight_purchases
+GROUP BY flight_id
+)
+
+SELECT flights.id AS flight_id,
+(number_of_seats-totalPurchasedSeats) AS free_seats
+FROM totalPurchased INNER JOIN flights
+ON totalPurchased.flight_id=flights.id
+INNER JOIN planes
+ON planes.id=flights .plane_id
