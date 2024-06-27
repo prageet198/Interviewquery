@@ -1,0 +1,31 @@
+LEVEL:-MEDIUM
+COMPANY:-Meta
+URL:-https://www.interviewquery.com/questions/friend-request-acceptance-rate
+
+Question:-
+A social media company re-designed its UI to include notifications to users when they receive friend requests.
+
+Evaluate if this change increased the friend request acceptance rate. Find the acceptance rate for friend requests 
+sent in the four weeks prior to (and including) July 2nd, 2022.
+
+Note: The acceptance rate is the percentage of sent requests that were accepted.*
+
+Assume that nobody sends or accepts the same request twice. We will consider two friend requests to be duplicates when their sender and receiver are the same.
+
+Solution:-
+WITH totalRequestSend AS (
+SELECT COUNT(*) AS totalRequest
+FROM friend_requests
+WHERE DATE(sent_at) BETWEEN DATE_SUB('2022-07-02', INTERVAL 4 WEEK) AND '2022-07-02'
+),
+totalAcceptedRequest AS (
+SELECT COUNT(*) AS totalAccepted
+FROM friend_requests INNER JOIN requests_accepted
+ON friend_requests.requester_id=requests_accepted.requester_id
+AND friend_requests.receiver_id=requests_accepted.accepter_id
+WHERE DATE(sent_at) BETWEEN DATE_SUB('2022-07-02', INTERVAL 4 WEEK) AND '2022-07-02'
+)
+
+SELECT COALESCE((totalAccepted/totalRequest),1) AS acceptance_rate
+FROM totalRequestSend INNER JOIN totalAcceptedRequest
+ON 1=1
