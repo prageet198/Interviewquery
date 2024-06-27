@@ -1,0 +1,22 @@
+LEVEL:-MEDIUM
+COMPANY:-Nvida
+URL:-https://www.interviewquery.com/questions/weighted-average-campaigns
+
+Question:-
+A marketing team wants to compute a weighted average score to measure the effectiveness of their past email campaigns. 
+They want the weight of the open rate to be 0.3, and the weight of the click rate to be 0.7.
+
+Write a SQL query to calculate the weighted average for each campaign.
+
+Notes: The click rate is the number of clicks over the number of users. The weighted average should be rounded to two decimal places.
+
+Solution:-
+WITH overallCalculation AS (
+SELECT campaign_name,
+ROUND((num_clicks/num_users)*0.7,2) AS totalClicks,
+ROUND((num_opens/num_users)*0.3,2) AS totalOpen
+FROM email_campaigns
+)
+SELECT campaign_name,
+(totalClicks+totalOpen) AS weighted_avg
+FROM overallCalculation
