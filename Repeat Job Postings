@@ -1,0 +1,59 @@
+LEVEL:-MEDIUM
+COMPANY:-Linked-In
+URL:-https://www.interviewquery.com/questions/repeat-job-postings
+
+Question:-
+Given a table of job postings, write a query to retrieve the number of users that have posted each job only once and 
+the number of users that have posted at least one job multiple times.
+
+Each user has at least one job posting. Thus the sum of single_post and multiple_posts should equal the total number of distinct user_id’s.
+
+Solution:-
+WITH totalUniqueJobs AS(
+SELECT user_id,
+COUNT(DISTINCT job_id) AS totalJobs
+FROM job_postings 
+GROUP BY user_id
+ORDER BY user_id
+),
+totalJobPostings AS (
+SELECT user_id,
+COUNT(*) AS totalJobPost
+FROM job_postings 
+GROUP BY user_id
+),
+calculation AS (
+SELECT totalUniqueJobs.user_id,
+totalJobs,
+totalJobPost,
+CASE WHEN totalJobs=totalJobPost THEN 1 ELSE 0 END AS flag
+FROM totalUniqueJobs INNER JOIN totalJobPostings
+ON totalUniqueJobs.user_id=totalJobPostings.user_id
+),
+singlePost AS (
+SELECT COUNT(*) AS single_post
+FROM calculation WHERE flag='1'
+),
+multiplePost AS (
+    SELECT COUNT(*) AS multiple_posts
+FROM calculation WHERE flag='0'
+)
+SELECT * FROM singlePost,multiplePost
+
+Solution-2:-
+WITH user_job AS (
+
+SELECT user_id
+       , COUNT(DISTINCT job_id) AS n_jobs
+       , COUNT(DISTINCT id) AS n_posts
+    FROM job_postings
+    GROUP BY 1
+
+    )
+    
+SELECT
+SUM(CASE WHEN n_jobs = n_posts THEN 1 ELSE 0 END) AS 
+single_post
+,SUM(CASE WHEN n_jobs != n_posts THEN 1 ELSE 0 END) AS 
+multiple_posts
+FROM user_job
