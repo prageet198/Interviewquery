@@ -1,0 +1,27 @@
+LEVEL:-MEDIUM
+COMPANY:-Amazon
+URL:-https://www.interviewquery.com/questions/branch-sales-pivot
+
+Question:-
+Your company, a multinational retail corporation, has been storing sales data from various branches worldwide in separate tables according to 
+the year the sales were made. The current data structure is proving inefficient for business analytics and the management has requested your expertise 
+to streamline the data.
+
+Write a query to create a pivot table that shows total sales for each branch by year.
+
+Note: Assume that the sales are represented by the total_sales column and are in USD. Each branch is represented by its unique branch_id.
+
+Solution:-
+WITH combineData AS (
+SELECT *, 1 AS flag FROM sales_2021
+UNION ALL
+SELECT *, 2 AS flag FROM sales_2022
+)
+SELECT 
+    branch_id,
+    SUM(CASE WHEN flag = 1 THEN total_sales ELSE 0 END) AS total_sales_2021,
+    SUM(CASE WHEN flag = 2 THEN total_sales ELSE 0 END) AS total_sales_2022
+FROM 
+    combineData
+GROUP BY 
+    branch_id;
