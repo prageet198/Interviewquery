@@ -1,0 +1,24 @@
+LEVEL:-MEDIUM
+COMPANY:-Intuit
+URL:-https://www.interviewquery.com/questions/above-average-product-prices
+
+Question:-
+Given a table of transactions and products, write a query to return the product id, product price, and average transaction 
+total value (price*quantity) of each product such that it has a price higher than the average transaction price.
+
+Notes:
+
+    Round the values to two decimal places.
+    The average transaction price is defined as the average amount a customer spends per transaction on a specific product.
+    A transaction can only contain one type of product
+
+Solution:-
+WITH zap AS (
+    SELECT ROUND(AVG(price * quantity), 2) AS avg_price
+    FROM transactions AS t
+    INNER JOIN products AS p
+    	ON t.product_id = p.id
+)
+SELECT id AS product_id ,price AS product_price, avg_price FROM products
+JOIN zap ON 1 = 1
+WHERE price > avg_price
