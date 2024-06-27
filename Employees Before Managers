@@ -1,0 +1,12 @@
+LEVEL:-MEDIUM
+COMPANY:-Amazon
+URL:-https://www.interviewquery.com/questions/employees-before-managers
+
+Question:-
+You’re given two tables: employees and managers. Find the names of all employees who joined before their manager.
+
+Solution:-
+SELECT CONCAT (first_name,' ',last_name) AS employee_name
+FROM employees INNER JOIN managers
+ON employees.manager_id=managers.id AND
+employees.join_date<managers .join_date
