@@ -1,0 +1,52 @@
+LEVEL:-MEDIUM
+COMPANY:-Amazon
+URL:-https://www.interviewquery.com/questions/weighted-average-with-missing-dates
+
+Question:-
+The analytics team at a social media platform wants to analyze the short-term trends in daily user growth. For this task, they 
+want you to calculate the 3-day rolling weighted average for new daily users, where the current day has a weight of 3, the previous day has 
+a weight of 2, and the day before has a weight of 1.
+
+The platform logs new records into the acquisitions table for the days on which new users arrive. Otherwise, it skips the date.
+
+Write a SQL query to calculate the 3-day rolling weighted average for new daily users from the acquisitions table.
+
+Round the average to two decimal places.
+
+Solution:-
+WITH cte AS (
+    SELECT 
+        a1.date
+        , ROUND((3*a1.new_users + 2*IFNULL(a2.new_users,0) + 1*IFNULL(a3.new_users,0))/6,2) AS weighted_average
+        , RANK() OVER(ORDER BY a1.date) AS rnk
+    FROM acquisitions a1
+        LEFT JOIN acquisitions a2 ON a1.date = a2.date + 1
+        LEFT JOIN acquisitions a3 ON a1.date = a3.date + 2
+)
+SELECT date, weighted_average
+FROM cte
+WHERE rnk > 2;
+
+The expressions a2.date + 1 and a3.date + 2 are used in the LEFT JOIN conditions. These expressions are not literal day differences in the data 
+but are used as mathematical operations on the date values to establish relationships between rows in the acquisitions table.
+
+Here's what they mean in practical terms:
+
+    a2.date + 1: This means that a2.date should be exactly one day before a1.date. It's not a direct date comparison but rather a way to specify that 
+	the date in a2.date should match a1.date - 1 day.
+
+    a3.date + 2: Similarly, this means that a3.date should be exactly two days before a1.date. It specifies that the date in a3.date should match a1.date - 2 days.
+
+To clarify further with an example:
+
+Assume a1.date is '2023-01-02'. The query will look for rows in acquisitions (a2 and a3) where:
+
+    a2.date should be '2023-01-01' (which is a1.date - 1 day).
+    a3.date should be '2022-12-31' (which is a1.date - 2 days).
+
+The query uses these conditions (a1.date = a2.date + 1 and a1.date = a3.date + 2) to find rows in the acquisitions table that match these relationships. 
+It's a way to construct sets of three consecutive dates (a1date, a2date, a3date) based on the data in the acquisitions table.
+
+So, in summary, when I mentioned "one day before" or "two days before" earlier, I meant these conditions are used in the SQL query to establish relationships 
+between dates in the acquisitions table. They are not actual date values stored in the table but are derived through these arithmetic operations (+ 1 and + 2) 
+on the date columns (a2.date and a3.date).
