@@ -1,0 +1,27 @@
+LEVEL:-MEDIUM
+COMPANY:-Salesforce
+URL:-https://www.interviewquery.com/questions/weighted-average-sales
+
+Question:-
+The sales department is conducting a performance review and is interested in trends in product sales. They have decided to use a 
+weighted moving average as part of their analysis.
+
+Write a SQL query to calculate the 3-day weighted moving average of sales for each product. Use the weights 0.5 for the current day, 0.3 
+for the previous day, and 0.2 for the day before that.
+
+Note: Only output the weighted moving average for dates that have two or more preceding dates. You may assume that the table doesn’t skip dates.
+
+Solution:-
+WITH overallData AS(
+SELECT date,
+product_id,
+LAG(sales_volume, 2) OVER ( PARTITION BY product_id ORDER BY date) AS sales_volume_3_days_ago,
+LAG(sales_volume, 1) OVER (PARTITION BY product_id ORDER BY date) AS sales_volume_2_days_ago,
+sales_volume AS sales_volume_today
+FROM sales
+)
+SELECT date,
+product_id,
+(sales_volume_today*0.5) + (sales_volume_2_days_ago*0.3) + (sales_volume_3_days_ago*0.2) AS weighted_avg_sales
+FROM overallData
+WHERE sales_volume_3_days_ago IS NOT NULL AND sales_volume_2_days_ago IS NOT NULL
