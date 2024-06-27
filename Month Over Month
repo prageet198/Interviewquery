@@ -1,0 +1,49 @@
+LEVEL:-MEDIUM
+COMPANY:-Amazon
+URL:-https://www.interviewquery.com/questions/month-over-month
+
+Question:-
+Given a table of transactions and products, write a function to get the month_over_month change in revenue for the year 2019. 
+Make sure to round month_over_month to 2 decimal places.
+
+Solution:-
+WITH initialData AS (
+    SELECT 
+        EXTRACT(MONTH FROM created_at) AS transMonth,
+        (quantity * price) AS totalPrice
+    FROM 
+        transactions
+        INNER JOIN products ON transactions.product_id = products.id
+    WHERE 
+        EXTRACT(YEAR FROM created_at) = '2019'
+),
+calculation AS (
+    SELECT 
+        transMonth,
+        SUM(totalPrice) AS totalMonthly
+    FROM 
+        initialData
+    GROUP BY 
+        transMonth
+),
+monthlyRevenue AS (
+    SELECT 
+        transMonth,
+        totalMonthly,
+        LAG(totalMonthly, 1) OVER (ORDER BY transMonth) AS previousMonth
+    FROM 
+        calculation
+),
+overallCalculation AS (
+SELECT 
+    transMonth,
+    CASE 
+        WHEN previousMonth IS NULL THEN NULL
+        ELSE (totalMonthly - previousMonth) / previousMonth
+    END AS month_over_month_growth
+FROM 
+    monthlyRevenue
+)
+SELECT transMonth AS month,
+ROUND(month_over_month_growth::numeric,2) AS month_over_month
+FROM overallCalculation
