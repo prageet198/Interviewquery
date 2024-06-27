@@ -1,0 +1,45 @@
+LEVEL:-MEDIUM
+COMPANY:-Adobe
+URL:-https://www.interviewquery.com/questions/over-budget-projects
+
+Question:-
+Over budget on a project is defined when the salaries, prorated to the day, exceed the budget of the project.
+
+For example, if Alice and Bob both combined income make 200K and work on a project of a budget of 50K that takes half a year, then the project 
+is over budget given 0.5 * 200K = 100K > 50K.
+
+Write a query to forecast the budget for all projects and return a label of "overbudget" if it is over budget and "within budget" otherwise.
+
+Note: Assume that employees only work on one project at a time.
+
+Solution:-
+WITH projectTotalEmpSal AS(
+SELECT 
+SUM(salary) AS totalEmpProjectSalary,
+employee_projects.project_id
+from employees INNER JOIN employee_projects 
+ON employees.id=employee_projects.employee_id
+GROUP BY employee_projects.project_id
+),
+projectDetails AS (
+SELECT id,
+title,
+budget,
+CAST(DATE_PART('day', end_date - start_date) AS INTEGER) AS totalDays
+FROM projects
+),
+calculation AS (
+SELECT projectDetails.id,
+projectDetails.title,
+projectDetails.budget,
+projectDetails.totalDays,
+totalEmpProjectSalary,
+((totaldays::numeric)/365)*totalempprojectsalary AS calculatedBudget
+FROM projectTotalEmpSal INNER JOIN projectDetails
+ON projectTotalEmpSal.project_id=projectDetails.id
+)
+
+SELECT title,
+CASE WHEN budget>=calculatedBudget THEN 'within budget'
+ELSE 'overbudget' END AS project_forecast
+FROM calculation
