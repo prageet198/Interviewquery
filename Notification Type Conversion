@@ -1,0 +1,63 @@
+LEVEL:-HARD
+COMPANY:-Meta
+URL:-https://www.interviewquery.com/questions/notification-type-conversion
+
+Question:-
+You are tasked to determine which type of notification generates the most conversions. Due to an overlook in the database design, 
+there is no concrete way to attribute a purchase to a specific notification. However, you might be able to infer this data.
+
+Given tables notifications, notification_events, and purchases, write a query to determine the conversion rate of each type of notification.
+
+Notes:
+
+    Notifications are perishable, meaning a notification disappears exactly after another one is sent.
+    A purchase can only be attributed to a notification once.
+    A purchase cannot be attributed to a notification if the product has already been purchased at the time of clicking.
+    Order the output by type, alphabetically.
+
+Solution:-
+WITH LatestNotifications AS (
+    SELECT 
+        n.type AS notification_type,
+        n.product_id,
+        MAX(n.id) AS latest_notification_id
+    FROM 
+        notifications n
+    GROUP BY 
+        n.type, n.product_id
+),
+LatestClickEvents AS (
+    SELECT 
+        ne.notification_id,
+        ne.user_id,
+        MAX(ne.clicked_at) AS latest_clicked_at
+    FROM 
+        notification_events ne
+    GROUP BY 
+        ne.notification_id, ne.user_id
+),
+LatestPurchases AS (
+    SELECT DISTINCT
+        product_id,
+        (purchased_at) AS latest_purchased_at
+    FROM 
+        purchases
+)
+SELECT 
+    ln.notification_type,
+    ROUND(
+        COALESCE(
+            SUM(CASE WHEN lp.latest_purchased_at > lce.latest_clicked_at THEN 1 ELSE 0 END) /
+            NULLIF(COUNT(DISTINCT lce.notification_id), 0), 0
+        ),
+        3
+    ) AS conversion_rate
+FROM 
+    LatestNotifications ln
+LEFT JOIN LatestClickEvents lce ON ln.latest_notification_id = lce.notification_id
+LEFT JOIN notifications n ON lce.notification_id = n.id
+LEFT JOIN LatestPurchases lp ON  n.product_id = lp.product_id
+GROUP BY 
+    ln.notification_type
+ORDER BY 
+    ln.notification_type;
