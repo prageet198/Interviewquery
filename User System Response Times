@@ -1,0 +1,33 @@
+LEVEL:-HARD
+COMPANY:-Meta
+URL:-https://www.interviewquery.com/questions/user-system-response-times
+
+Question:-
+You have been provided with two tables: conversation_messages and interviews.
+
+Write a query to compute the average time it takes for each user to respond to the previous system message. The message type is described in the 
+message_type field where it could be either user or system indicating who sent the message.
+
+Solution:-
+WITH RankedMessages AS (
+    SELECT
+    interviews .user_id,
+        conversation_messages.message_type,
+        conversation_messages.created_at,
+        LAG(conversation_messages.created_at) OVER (PARTITION BY interview_id ORDER BY conversation_messages.created_at) AS prev_created_at,
+        LAG(conversation_messages.message_type) OVER (PARTITION BY interview_id ORDER BY conversation_messages.created_at) AS prev_message_type
+    FROM
+        conversation_messages INNER JOIN interviews 
+        ON conversation_messages.interview_id=interviews.id
+)
+SELECT
+    user_id,
+    AVG(
+        TIMESTAMPDIFF(SECOND, prev_created_at, created_at)
+    ) AS response_times
+FROM
+    RankedMessages
+WHERE
+    message_type = 'user' AND prev_message_type = 'system'
+GROUP BY
+    user_id
